@@ -1,1 +1,2 @@
-주석 잘 읽고 
+pintos time_sleep() busy waiting->block 방식으로 개선
+
