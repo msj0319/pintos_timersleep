@@ -3,7 +3,7 @@
 #include <inttypes.h>
 #include <round.h>
 #include <stdio.h>
-#include "threads/malloc.h"
+#include "threads/malloc.h" //malloc을 쓰기위함, thread 폴더의 malloc 헤더 include
 #include "devices/pit.h"
 #include "threads/interrupt.h"
 #include "threads/synch.h"
@@ -18,6 +18,7 @@
 #error TIMER_FREQ <= 1000 recommended
 #endif
 
+//여기서부터 
 bool less_alarm(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED);
 void alarm_block(int64_t expr, struct thread *th);
 void alarm_unblock(void);
@@ -50,7 +51,6 @@ list_insert_ordered(&alarm_list, &t->elem, less_alarm, (void *)NULL);
 thread_block();
 }
 
-
 void alarm_unblock(void)
 {
 struct alarm *t;
@@ -63,8 +63,7 @@ while(!list_empty(&alarm_list)){
   else break;
   }
 }
-
-	
+//여기까지
 
 /* Number of timer ticks since OS booted. */
 static int64_t ticks;
@@ -88,7 +87,7 @@ timer_init (void)
 {
   pit_configure_channel (0, 2, TIMER_FREQ);
   intr_register_ext (0x20, timer_interrupt, "8254 Timer");
-  list_init(&alarm_list);
+  list_init(&alarm_list); //31Line에서 전역으로 선언했던 알람 리스트 초기화 
 }
 
 /* Calibrates loops_per_tick, used to implement brief delays. */
@@ -139,10 +138,10 @@ timer_elapsed (int64_t then)
 /* Sleeps for approximately TICKS timer ticks.  Interrupts must
    be turned on. */
 void
-timer_sleep (int64_t ticks) 
+timer_sleep (int64_t ticks) //타이머 슬립 수정 주석 처리 잘 볼 것.
 {
   //int64_t start = timer_ticks ();
-  enum intr_level old_intr_level;
+  enum intr_level old_intr_level; //old_intr_level 
 
   ASSERT (intr_get_level () == INTR_ON);
 
@@ -151,7 +150,7 @@ timer_sleep (int64_t ticks)
   intr_set_level(old_intr_level);
 
 /*
-  while (timer_elapsed (start) < ticks) 
+  while (timer_elapsed (start) < ticks) //busy waiting 개선을 위해 주석처리
     thread_yield ();
 */
 }
@@ -232,7 +231,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
 {
   ticks++;
   thread_tick ();
-  alarm_unblock();
+  alarm_unblock(); //알람 언블록 
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
