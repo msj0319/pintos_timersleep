@@ -98,6 +98,7 @@ struct thread
     uint32_t *pagedir;                  /* Page directory. */
 #endif
     /*set alarm time for sleep*/
+    //tcb에 Time의 만료시간(깨어날 시간)을 저장하는 uint32_t 타입 변수 추가
     uint32_t expr;
 
     /* Owned by thread.c. */
